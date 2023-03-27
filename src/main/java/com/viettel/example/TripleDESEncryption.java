@@ -17,8 +17,8 @@ import java.util.Set;
  */
 @Tags({"example", "processor", "encrypt", "TripleDES"})
 @CapabilityDescription("Encrypt FlowFile contents using TripleDES algorithm")
-public class MyProcessor extends AbstractProcessor {
-  private List<PropertyDescriptor> descriptors;
+public class TripleDESEncryption extends AbstractProcessor {
+//  private List<PropertyDescriptor> descriptors;
   private Set<Relationship> relationships;
   private static final Relationship REL_SUCCESS = new Relationship.Builder()
     .name("success")
@@ -35,7 +35,7 @@ public class MyProcessor extends AbstractProcessor {
     .build();
   @Override
   protected void init(ProcessorInitializationContext context) {
-    //descriptors.add(MY_PROPERTY);
+    //descriptors.add();
     this.relationships = Set.of(REL_SUCCESS, REL_FAILURE, REL_ORIGINAL);
   }
 
@@ -45,21 +45,21 @@ public class MyProcessor extends AbstractProcessor {
     if (flowFile == null) {
       return;
     }
-//    final ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-//    processSession.exportTo(flowFile, bytes);
-//    final String contents = bytes.toString();
-//    String encryptedContent;
-    FlowFile clone = processSession.clone(flowFile);
-//    processSession.transfer(flowFile, REL_ORIGINAL);
-    processSession.transfer(clone, REL_SUCCESS);
-//
-//    try {
-//      encryptedContent = EncryptionService.encrypt(contents);
-//      newFlowFile = processSession.write(newFlowFile, out -> out.write(encryptedContent.getBytes()));
-//      processSession.transfer(newFlowFile, REL_SUCCESS);
-//    } catch (RuntimeException e) {
-//      processSession.transfer(newFlowFile, REL_FAILURE);
-//    }
+    final ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+    processSession.exportTo(flowFile, bytes);
+    final String contents = bytes.toString();
+    String encryptedContent;
+    FlowFile fork = processSession.create(flowFile);
+
+    try {
+      encryptedContent = EncryptionService.encrypt(contents);
+      processSession.write(fork, out -> out.write(encryptedContent.getBytes()));
+      processSession.transfer(fork, REL_SUCCESS);
+    } catch (RuntimeException e) {
+      processSession.transfer(fork, REL_FAILURE);
+    } finally {
+      processSession.transfer(flowFile, REL_ORIGINAL);
+    }
   }
 
   @Override
@@ -67,8 +67,8 @@ public class MyProcessor extends AbstractProcessor {
     return this.relationships;
   }
 
-  @Override
-  public final List<PropertyDescriptor> getSupportedPropertyDescriptors() {
-    return descriptors;
-  }
+//  @Override
+//  public final List<PropertyDescriptor> getSupportedPropertyDescriptors() {
+//    return descriptors;
+//  }
 }

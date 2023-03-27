@@ -56,8 +56,10 @@ public class MyOtherProcessor extends AbstractProcessor {
       return;
     }
 
-    FlowFile clone = session.clone(flowFile);
-//    session.transfer(flowFile, REL_ORIGINAL);
-    session.transfer(clone, REL_SPLITS);
+//    FlowFile clone = session.clone(flowFile);
+    FlowFile newFlowFile = session.create();
+//    session.transfer(clone, REL_SPLITS);
+    session.transfer(newFlowFile, REL_SPLITS);
+    session.transfer(flowFile, REL_ORIGINAL);
   }
 }

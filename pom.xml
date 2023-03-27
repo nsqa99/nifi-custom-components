@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.viettel.example</groupId>
-    <artifactId>nif-custom-components</artifactId>
+    <artifactId>nifi-custom-components</artifactId>
     <version>0.0.1</version>
     <packaging>nar</packaging>
 

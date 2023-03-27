@@ -47,12 +47,11 @@ public class TripleDESEncryption extends AbstractProcessor {
     }
     final ByteArrayOutputStream bytes = new ByteArrayOutputStream();
     processSession.exportTo(flowFile, bytes);
-    final String contents = bytes.toString();
     String encryptedContent;
     FlowFile fork = processSession.create(flowFile);
 
     try {
-      encryptedContent = EncryptionService.encrypt(contents);
+      encryptedContent = EncryptionService.encrypt(bytes.toByteArray());
       processSession.write(fork, out -> out.write(encryptedContent.getBytes()));
       processSession.transfer(fork, REL_SUCCESS);
     } catch (RuntimeException e) {

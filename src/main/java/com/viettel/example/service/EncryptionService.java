@@ -19,7 +19,7 @@ public class EncryptionService {
   private static final byte[] secretKey = "1234567689Aa@aA987654321".getBytes();
   private static final byte[] iv = "a76nb5h9".getBytes();
 
-  public static String encrypt(String msg) {
+  public static String encrypt(byte[] msgBytes) {
     SecretKeySpec secretKeySpec = new SecretKeySpec(secretKey, "TripleDES");
     IvParameterSpec ivSpec = new IvParameterSpec(iv);
     Cipher encryptCipher;
@@ -27,8 +27,7 @@ public class EncryptionService {
     try {
       encryptCipher = Cipher.getInstance("TripleDES/CBC/PKCS5Padding");
       encryptCipher.init(Cipher.ENCRYPT_MODE, secretKeySpec, ivSpec);
-      byte[] secretMessagesBytes = msg.getBytes(StandardCharsets.UTF_8);
-      byte[] encryptedMessageBytes = encryptCipher.doFinal(secretMessagesBytes);
+      byte[] encryptedMessageBytes = encryptCipher.doFinal(msgBytes);
 
       return Base64.getEncoder().encodeToString(encryptedMessageBytes);
     } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidAlgorithmParameterException |
